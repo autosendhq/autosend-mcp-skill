@@ -1,10 +1,19 @@
 ---
 name: autosend-mcp
 description: Connect to AutoSend email MCP server from OpenClaw using mcporter. Use for managing email campaigns, templates, contacts, and senders via AI.
-license: MIT
+version: 0.1.0
 metadata:
-  version: 1.0.0
-  author: AutoSend
+  openclaw:
+    requires:
+      bins:
+        - mcporter
+        - node
+    install:
+      - kind: node
+        package: mcporter
+        bins: [mcporter]
+    emoji: "📧"
+    homepage: https://docs.autosend.com/ai/mcp-server
 ---
 
 # AutoSend MCP Skill
