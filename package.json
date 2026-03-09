@@ -1,0 +1,19 @@
+{
+  "name": "autosend-mcp-skill",
+  "version": "1.0.0",
+  "description": "OpenClaw skill for connecting to AutoSend email platform via MCP",
+  "author": "AutoSend",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "autosend",
+    "email",
+    "openclaw",
+    "clawhub",
+    "mcporter"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://clawhub.ai/autosend/autosend-mcp-skill"
+  }
+}

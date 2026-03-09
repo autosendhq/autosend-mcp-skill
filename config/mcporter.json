@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "autosend": {
+      "baseUrl": "https://mcp.autosend.com/",
+      "description": "AutoSend email MCP",
+      "auth": "oauth"
+    }
+  },
+  "imports": []
+}
