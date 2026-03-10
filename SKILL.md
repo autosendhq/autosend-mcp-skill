@@ -7,7 +7,6 @@ metadata:
     requires:
       bins:
         - mcporter
-        - node
     install:
       - kind: node
         package: mcporter
@@ -24,7 +23,7 @@ Connect OpenClaw to [AutoSend](https://autosend.com) email platform via MCP usin
 **Transport:** Streamable HTTP + OAuth 2.0
 **Docs:** https://docs.autosend.com/ai/mcp-server
 
-## Available Tools (21)
+## Available Tools (19)
 
 | Category | Tools |
 |----------|-------|
@@ -32,9 +31,8 @@ Connect OpenClaw to [AutoSend](https://autosend.com) email platform via MCP usin
 | Templates | `list_templates`, `search_templates`, `get_template`, `create_template`, `update_template`, `delete_template` |
 | Senders | `list_senders`, `get_sender` |
 | Suppression Groups | `list_suppression_groups`, `get_suppression_group` |
-| Campaigns | `list_campaigns`, `get_campaign`, `create_campaign`, `update_campaign`, `delete_campaign`, `duplicate_campaign`, `send_campaign` |
+| Campaigns | `list_campaigns`, `get_campaign`, `create_campaign`, `update_campaign`, `delete_campaign`, `duplicate_campaign` |
 | Analytics | `get_campaign_analytics`, `get_email_activity_analytics` |
-| Testing | `send_test_email` |
 
 ### Guided Workflows
 - `create-campaign` — Step-by-step campaign creation
@@ -42,7 +40,6 @@ Connect OpenClaw to [AutoSend](https://autosend.com) email platform via MCP usin
 
 ## Prerequisites
 
-- Node.js 18+
 - AutoSend account (https://autosend.com)
 
 ## Setup
@@ -82,26 +79,18 @@ mcporter auth autosend
 
 #### Option B: Headless Server (human-in-the-loop)
 
-Use the included helper script:
+On servers without a browser, follow these manual steps:
 
-```bash
-# 1. Generate auth URL
-node scripts/oauth-helper.js init
+1. **Discover OAuth endpoints:** `GET https://mcp.autosend.com/.well-known/oauth-authorization-server`
+2. **Register a dynamic client:** POST to the registration endpoint from step 1
+3. **Build an authorization URL** with PKCE (`code_challenge_method=S256`) and open it in a browser on another machine
+4. **Authorize and copy the callback URL** — the page won't load locally, but the URL contains the `code` and `state` parameters
+5. **Exchange the code for tokens:** POST to the token endpoint with the code and PKCE verifier
+6. **Save tokens** to `~/.mcporter/autosend/tokens.json`
 
-# 2. Open URL in browser, authorize, copy callback URL
+To refresh tokens later, POST to the token endpoint with `grant_type=refresh_token`.
 
-# 3. Exchange for tokens
-node scripts/oauth-helper.js exchange "http://127.0.0.1:8765/callback?code=XXX&state=YYY"
-
-# 4. Verify connection
-node scripts/oauth-helper.js test
-```
-
-**How it works:**
-1. Agent generates OAuth URL and sends to human
-2. Human opens URL, logs in, authorizes
-3. Human copies callback URL (page won't load — that's OK)
-4. Agent exchanges code for tokens
+See the [MCP OAuth spec](https://modelcontextprotocol.io/) for full details.
 
 ### 4. Test Connection
 
@@ -130,22 +119,22 @@ mcporter call autosend.get_email_activity_analytics
 
 ## Token Management
 
-Tokens are stored in `~/.mcporter/autosend/tokens.json`
+Tokens are stored in `~/.mcporter/autosend/tokens.json` (managed by mcporter).
 
 ```bash
-# Refresh expired tokens
-node scripts/oauth-helper.js refresh
+# Re-authenticate (refreshes tokens automatically)
+mcporter auth autosend
 
-# Test current tokens
-node scripts/oauth-helper.js test
+# Verify tokens work
+mcporter call autosend.list_templates
 ```
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Token expired | Run `node scripts/oauth-helper.js refresh` |
-| Invalid credentials | Re-run full OAuth flow |
+| Token expired | Run `mcporter auth autosend` to re-authenticate |
+| Invalid credentials | Re-run full OAuth flow with `mcporter auth autosend` |
 | Connection timeout | Check network and token validity |
 
 ## References
